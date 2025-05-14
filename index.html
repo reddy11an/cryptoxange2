@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CryptoXchange - Exchange de Criptomonedas</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f3f4f6;
+      color: #333;
+    }
+
+    header {
+      background-color: #1f2937;
+      color: white;
+      padding: 1rem;
+      text-align: center;
+    }
+
+    nav a {
+      color: white;
+      margin: 0 1rem;
+      text-decoration: none;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    section {
+      padding: 2rem;
+    }
+
+    h2 {
+      color: #111827;
+    }
+
+    .crypto-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+    }
+
+    .crypto-table th, .crypto-table td {
+      border: 1px solid #ccc;
+      padding: 0.8rem;
+      text-align: center;
+    }
+
+    .positive { color: green; }
+    .negative { color: red; }
+
+    .form-group {
+      margin-bottom: 1rem;
+    }
+
+    input[type="email"], input[type="password"], input[type="number"] {
+      width: 100%;
+      padding: 0.5rem;
+      margin-top: 0.3rem;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    button {
+      background-color: #3b82f6;
+      color: white;
+      border: none;
+      padding: 0.7rem 1.2rem;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    footer {
+      background-color: #1f2937;
+      color: white;
+      text-align: center;
+      padding: 1rem;
+      margin-top: 2rem;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    canvas {
+      max-width: 100%;
+      height: auto;
+      margin-top: 2rem;
+    }
+
+    .intro-anim {
+      font-size: 1.4rem;
+      animation: pulse 2s infinite;
+      color: #3b82f6;
+    }
+
+    @keyframes pulse {
+      0% { opacity: 1; }
+      50% { opacity: 0.4; }
+      100% { opacity: 1; }
+    }
+
+    /* Estilos Modo Oscuro */
+    .dark-mode {
+      background-color: #111827;
+      color: white;
+    }
+
+    .dark-mode button {
+      background-color: #4b5563;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>CryptoXchange</h1>
+    <p class="intro-anim">Explora, aprende y simula el intercambio de criptomonedas</p>
+    <nav>
+      <a onclick="showSection('home')">Inicio</a>
+      <a onclick="showSection('precios')">Precios</a>
+      <a onclick="showSection('cuenta')">Cuenta</a>
+      <a onclick="showSection('aprende')">Aprende</a>
+      <a onclick="showSection('sobre')">Sobre</a>
+      <a onclick="toggleDarkMode()">Modo Oscuro</a>
+    </nav>
+  </header>
+
+  <main>
+    <section id="home">
+      <h2>Bienvenido a CryptoXchange</h2>
+      <p>Una simulación educativa donde puedes seguir el valor de las criptomonedas, ver gráficos y aprender sobre esta tecnología.</p>
+      <h3>Gráfico de capitalización total del mercado cripto (últimos 7 días)</h3>
+      <canvas id="globalChart"></canvas>
+      <div>
+        <h3>Tu saldo actual</h3>
+        <p><strong>USD:</strong> $<span id="usdBalance">5000</span></p>
+        <p><strong>BTC:</strong> <span id="btcBalance">0.5</span> BTC</p>
+        <p><strong>ETH:</strong> <span id="ethBalance">5</span> ETH</p>
+        <button onclick="buyCrypto()">Comprar más criptomonedas</button>
+      </div>
+    </section>
+
+    <section id="precios" class="hidden">
+      <h2>Precios en tiempo real</h2>
+      <table class="crypto-table" id="crypto-table">
+        <thead>
+          <tr>
+            <th>Criptomoneda</th>
+            <th>Precio (USD)</th>
+            <th>Cambio 24h</th>
+            <th>Acción</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+
+      <h3>Gráfico de precio - Bitcoin (últimos 7 días)</h3>
+      <canvas id="btcChart"></canvas>
+    </section>
+
+    <section id="cuenta" class="hidden">
+      <h2>Crea tu cuenta</h2>
+      <div class="form-group">
+        <label for="email">Correo electrónico</label>
+        <input type="email" id="email" placeholder="tucorreo@ejemplo.com" />
+      </div>
+      <div class="form-group">
+        <label for="password">Contraseña</label>
+        <input type="password" id="password" />
+      </div>
+      <div class="form-group">
+        <label for="confirm">Confirmar contraseña</label>
+        <input type="password" id="confirm" />
+      </div>
+      <button onclick="createAccount()">Crear cuenta</button>
+    </section>
+
+    <section id="aprende" class="hidden">
+      <h2>Aprende sobre Criptomonedas</h2>
+      <p><strong>¿Qué son?</strong><br>Las criptomonedas son monedas digitales descentralizadas que utilizan tecnología blockchain para asegurar transacciones. Las más conocidas son Bitcoin, Ethereum y muchas otras.</p>
+      <p><strong>Riesgos:</strong></p>
+      <ul>
+        <li>Alta volatilidad en precios.</li>
+        <li>Riesgo de pérdida de claves privadas.</li>
+        <li>Falta de regulación en muchos países.</li>
+        <li>Estafas y esquemas Ponzi relacionados.</li>
+      </ul>
+      <p><strong>Ventajas:</strong></p>
+      <ul>
+        <li>Transacciones rápidas e internacionales.</li>
+        <li>Privacidad y control sobre tus activos.</li>
+        <li>Innovación tecnológica (blockchain, contratos inteligentes).</li>
+      </ul>
+    </section>
+
+    <section id="sobre" class="hidden">
+      <h2>Sobre CryptoXchange</h2>
+      <p>CryptoXchange es una plataforma ficticia creada como proyecto académico para explicar el funcionamiento de las criptomonedas y su impacto en la economía digital.</p>
+      <h3>Miembros del grupo</h3>
+      <ul>
+        <li>Reddy Daniel Alfonso Espino</li>
+        <li>Tom Alves Moreira</li>
+        <li>Enrique Hernández Schwartz</li>
+        <li>Cristina Elena Blanga</li>
+        <li>Eduardo Santana Pueyo</li>
+      </ul>
+    </section>
+  </main>
+
+  <footer>
+    <p>Proyecto universitario - Grupo Podcast Criptomonedas © 2025</p>
+  </footer>
+
+  <script>
+    // Mostrar la sección correspondiente
+    function showSection(id) {
+      document.querySelectorAll("main > section").forEach(s => s.classList.add("hidden"));
+      document.getElementById(id).classList.remove("hidden");
+    }
+
+    // Modo oscuro
+    function toggleDarkMode() {
+      document.body.classList.toggle('dark-mode');
+    }
+
+    // Función para comprar criptomonedas (simulado)
+    function buyCrypto() {
+      alert("¡Simulación de compra exitosa!");
+    }
+
+    // Crear cuenta (simulado)
+    function createAccount() {
+      alert("¡Cuenta creada con éxito!");
+    }
+
+    // Cargar precios de criptomonedas
+    async function fetchPrices() {
+      const res = await fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin,ethereum,solana,cardano,ripple,dogecoin');
+      const data = await res.json();
+      const tbody = document.querySelector("#crypto-table tbody");
+      tbody.innerHTML = "";
+      data.forEach(coin => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${coin.name} (${coin.symbol.toUpperCase()})</td>
+          <td>$${coin.current_price.toLocaleString()}</td>
+          <td class="${coin.price_change_percentage_24h >= 0 ? 'positive' : 'negative'}">
+            ${coin.price_change_percentage_24h.toFixed(2)}%
+          </td>
+          <td><button>Comprar</button></td>
+        `;
+        tbody.appendChild(row);
+      });
+    }
+
+    // Cargar gráfico de Bitcoin
+    async function loadBitcoinChart() {
+      const res = await fetch('https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=usd&days=7');
+      const data = await res.json();
+      const labels = data.prices.map(p => {
+        const date = new Date(p[0]);
+        return `${date.getMonth()+1}/${date.getDate()}`;
+      });
+      const prices = data.prices.map(p => p[1]);
+      new Chart(document.getElementById("btcChart"), {
+        type: 'line',
+        data: {
+          labels,
+          datasets: [{
+            label: 'BTC/USD',
+            data: prices,
+            borderColor: 'rgba(59, 130, 246, 1)',
+            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+            tension: 0.3,
+            fill: true
+          }]
+        }
+      });
+    }
+
+    // Cargar gráfico de capitalización del mercado
+    async function loadGlobalChart() {
+      const res = await fetch('https://api.coingecko.com/api/v3/global');
+      const capNow = res.ok ? (await res.json()).data.total_market_cap.usd : 1000000000000;
+      const days = 7;
+      const labels = [];
+      const dataPoints = [];
+      const today = new Date();
+      for (let i = days - 1; i >= 0; i--) {
+        const date = new Date(today);
+        date.setDate(today.getDate() - i);
+        labels.push(`${date.getMonth()+1}/${date.getDate()}`);
+        const fluctuation = capNow * (0.9 + Math.random() * 0.2);
+        dataPoints.push(fluctuation);
+      }
+      new Chart(document.getElementById("globalChart"), {
+        type: 'bar',
+        data: {
+          labels,
+          datasets: [{
+            label: 'Capitalización de Mercado (USD)',
+            data: dataPoints,
+            backgroundColor: 'rgba(34, 197, 94, 0.6)',
+            borderColor: 'rgba(34, 197, 94, 1)',
+            borderWidth: 1
+          }]
+        }
+      });
+    }
+
+    // Cargar los gráficos al entrar a la sección
+    document.querySelector('a[onclick*="precios"]').addEventListener("click", () => {
+      fetchPrices();
+      loadBitcoinChart();
+    });
+
+    // Cargar la sección por defecto al inicio
+    window.onload = () => {
+      loadGlobalChart();
+    }
+  </script>
+</body>
+</html>
